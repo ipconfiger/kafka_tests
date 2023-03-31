@@ -27,7 +27,8 @@ jobs:
           UPLOAD_MODE: none
           
       - name: get version
-        run: echo "PACKAGE_VERSION=$(cat Cargo.toml | grep version | sed -n '1p' | cut -d '=' -f 2 | sed 's/\"//g' | sed 's/ //g')" >> $GITHUB_ENV
+        id: versions
+        run: echo "::set-output name=ver::$(cat Cargo.toml | grep version | sed -n '1p' | cut -d '=' -f 2 | sed 's/\"//g' | sed 's/ //g')"
       
       - name: Create Release
         id: create_release
@@ -35,8 +36,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ver_${{ PACKAGE_VERSION }}
-          release_name: Release ${{ PACKAGE_VERSION }}
+          tag_name: ver_${{ steps.versions.outputs.ver }}
+          release_name: Release ${{ steps.versions.outputs.ver }}
           draft: false
           prerelease: false
       
